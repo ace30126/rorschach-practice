@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>로르샤흐 연습실</title>
+  <meta name="theme-color" content="#2f3a4a">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="로르샤흐 연습">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>로르샤흐 연습실</h1>
+    <ol class="stepper" id="stepper">
+      <li data-phase="response">1. 반응</li>
+      <li data-phase="inquiry">2. 질문</li>
+      <li data-phase="scoring">3. 채점</li>
+      <li data-phase="feedback">4. 피드백</li>
+    </ol>
+    <div class="top-actions">
+      <button type="button" id="newSessionBtn" class="ghost">새 세션</button>
+      <button type="button" id="settingsBtn" class="ghost">설정</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="card-panel">
+      <canvas id="card" width="680" height="480" aria-label="연습용 잉크반점 카드"></canvas>
+      <p class="card-note">연습용으로 생성한 반점입니다. 실제 로르샤흐 카드가 아닙니다.</p>
+      <div class="box">
+        <h2>의뢰 정보</h2>
+        <p id="referral"></p>
+      </div>
+      <div class="box">
+        <h2>반응 기록</h2>
+        <ol id="responseSheet" class="response-sheet"></ol>
+        <p id="responseEmpty" class="muted">아직 반응이 없습니다.</p>
+      </div>
+    </section>
+
+    <section class="work-panel">
+      <div id="practicePane">
+        <p id="hint" class="hint"></p>
+        <div id="chatLog" class="chat-log" aria-live="polite"></div>
+        <form id="inputForm" class="input-row">
+          <button type="button" id="micBtn" class="mic" title="말하기">🎤</button>
+          <input id="examinerInput" type="text" autocomplete="off" placeholder="검사자로서 말할 내용">
+          <button type="submit" id="sendBtn">보내기</button>
+        </form>
+        <div class="phase-actions">
+          <button type="button" id="toInquiryBtn">질문 단계로 넘어가기</button>
+          <button type="button" id="toScoringBtn">채점으로 넘어가기</button>
+        </div>
+      </div>
+
+      <div id="scoringPane" hidden>
+        <p class="hint">반응마다 Exner 종합체계 기호로 채점하세요. 칩을 누르면 기호가 입력됩니다.</p>
+        <div id="scoringList"></div>
+        <div class="phase-actions">
+          <button type="button" id="backToInquiryBtn" class="ghost">질문 단계로 돌아가기</button>
+          <button type="button" id="feedbackBtn">피드백 받기</button>
+        </div>
+      </div>
+
+      <div id="feedbackPane" hidden></div>
+      <div id="toast" class="toast" role="alert" hidden></div>
+    </section>
+  </main>
+
+  <dialog id="settingsDialog">
+    <form method="dialog" id="settingsForm">
+      <h2>설정</h2>
+      <label>Anthropic API 키
+        <input id="apiKeyInput" type="password" autocomplete="off" placeholder="sk-ant-...">
+      </label>
+      <p class="muted small">키는 이 브라우저에만 저장되고 Anthropic API로만 전송됩니다. 연습 기록도 이 브라우저에만 남습니다.</p>
+      <label>모델
+        <select id="modelSelect"></select>
+      </label>
+      <label class="check"><input id="ttsCheck" type="checkbox"> 수검자 답변을 음성으로 읽기</label>
+      <label class="check"><input id="autoSendCheck" type="checkbox"> 말하기가 끝나면 바로 보내기</label>
+      <div class="dialog-actions">
+        <button type="button" class="ghost" onclick="this.closest('dialog').close('cancel')">닫기</button>
+        <button value="save" id="saveSettingsBtn">저장</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

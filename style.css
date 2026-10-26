@@ -59,6 +59,7 @@ button {
   border-radius: 8px;
   padding: 8px 14px;
   cursor: pointer;
+  touch-action: manipulation;
 }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 button.ghost { background: transparent; color: var(--text); border-color: var(--border); }
@@ -109,6 +110,13 @@ h2 { font-size: 14px; margin: 0 0 6px; color: var(--muted); font-weight: 600; }
 }
 @media (max-width: 860px) {
   .layout { grid-template-columns: 1fr; }
+  /* 휴대폰: 카드 바로 아래에 대화창을 두고, 의뢰 정보와 반응 기록은 그 아래로 */
+  .card-panel { display: contents; }
+  .card-panel .box { order: 2; }
+  .chat-log { height: 38vh; min-height: 200px; }
+  /* 아이폰은 16px 미만 입력창에 초점이 가면 화면을 확대한다 */
+  input, select { font-size: 16px; }
+  .chip { font-size: 13px; padding: 6px 10px; }
 }
 
 #card {

@@ -1,8 +1,8 @@
 // 앱 화면 파일만 캐시한다. API 호출은 캐시하지 않는다.
-const CACHE = 'rp-v2';
+const CACHE = 'rp-v3';
 const ASSETS = [
   './', './index.html', './style.css', './app.js', './inkblot.js', './persona.js',
-  './llm.js', './scoring.js', './manifest.webmanifest', './icon.svg',
+  './llm.js', './mock.js', './scoring.js', './manifest.webmanifest', './icon.svg',
   './apple-touch-icon.png', './icon-192.png', './icon-512.png',
 ];
 

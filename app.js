@@ -1,6 +1,7 @@
 import { drawInkblot, canvasToBase64 } from './inkblot.js';
 import { personaById, personaSystem, PERSONA_SCHEMA, feedbackSystem, FEEDBACK_SCHEMA } from './persona.js';
 import { callClaude, MODELS } from './llm.js';
+import { mockPersonaReply, mockFeedback } from './mock.js';
 import { LOCATIONS, DQ, FQ, DETERMINANTS, CONTENTS, SPECIAL_SCORES, SUFFIXES, emptyCode, formatCode, sameSet } from './scoring.js';
 
 const LS_SETTINGS = 'rp.settings';
@@ -38,7 +39,7 @@ function newSession() {
   };
 }
 
-let settings = { apiKey: '', model: MODELS[0].id, tts: true, autoSend: true, ...load(LS_SETTINGS, {}) };
+let settings = { apiKey: '', model: MODELS[0].id, tts: true, autoSend: true, demo: false, ...load(LS_SETTINGS, {}) };
 let session = load(LS_SESSION, null) || newSession();
 let busy = false;
 
@@ -123,8 +124,11 @@ function buildPersonaMessages() {
   return messages;
 }
 
+// 키가 없거나 데모를 켜면 미리 써 둔 응답으로 동작한다
+const isDemo = () => settings.demo || !settings.apiKey;
+
 function ensureKey() {
-  if (settings.apiKey) return true;
+  if (isDemo() || settings.apiKey) return true;
   openSettings();
   showError('먼저 설정에서 Anthropic API 키를 입력해 주세요.');
   return false;
@@ -139,7 +143,7 @@ async function sendExaminer(text) {
   busy = true;
   render();
   try {
-    const reply = await callClaude({
+    const reply = isDemo() ? await mockPersonaReply(session, text) : await callClaude({
       apiKey: settings.apiKey,
       model: settings.model,
       system: personaSystem(persona()),
@@ -185,7 +189,7 @@ async function requestFeedback() {
     .join('\n');
 
   try {
-    session.feedback = await callClaude({
+    session.feedback = isDemo() ? await mockFeedback(session) : await callClaude({
       apiKey: settings.apiKey,
       model: settings.model,
       system: feedbackSystem(persona()),
@@ -217,6 +221,7 @@ function render() {
     li.className = idx === current ? 'current' : idx < current ? 'done' : '';
   });
 
+  $('demoBanner').hidden = !isDemo();
   $('referral').textContent = persona().referral;
   renderResponseSheet();
 
@@ -390,6 +395,7 @@ function openSettings() {
   $('modelSelect').replaceChildren(...MODELS.map(m => el('option', { value: m.id, selected: m.id === settings.model }, m.label)));
   $('ttsCheck').checked = settings.tts;
   $('autoSendCheck').checked = settings.autoSend;
+  $('demoCheck').checked = settings.demo;
   $('settingsDialog').showModal();
 }
 
@@ -400,9 +406,11 @@ $('settingsDialog').addEventListener('close', () => {
     model: $('modelSelect').value,
     tts: $('ttsCheck').checked,
     autoSend: $('autoSendCheck').checked,
+    demo: $('demoCheck').checked,
   };
   save(LS_SETTINGS, settings);
   hideError();
+  render();
 });
 
 function startNewSession() {
@@ -433,7 +441,6 @@ if (session.phase === 'feedback' && !session.feedback) session.phase = 'scoring'
 
 drawCard();
 render();
-if (!settings.apiKey) openSettings();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch(() => { /* 오프라인 캐시 없이도 동작 */ });

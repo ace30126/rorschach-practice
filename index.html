@@ -27,6 +27,7 @@
       <button type="button" id="settingsBtn" class="ghost">설정</button>
     </div>
   </header>
+  <div id="demoBanner" class="demo-banner" hidden>데모 모드 - AI 응답이 아니라 미리 써 둔 예시 대답입니다. 실제 AI와 연습하려면 설정에서 API 키를 넣으세요.</div>
 
   <main class="layout">
     <section class="card-panel">
@@ -84,6 +85,7 @@
       </label>
       <label class="check"><input id="ttsCheck" type="checkbox"> 수검자 답변을 음성으로 읽기</label>
       <label class="check"><input id="autoSendCheck" type="checkbox"> 말하기가 끝나면 바로 보내기</label>
+      <label class="check"><input id="demoCheck" type="checkbox"> 데모 모드 (키 없이 체험, 키가 비어 있으면 자동으로 켜짐)</label>
       <div class="dialog-actions">
         <button type="button" class="ghost" onclick="this.closest('dialog').close('cancel')">닫기</button>
         <button value="save" id="saveSettingsBtn">저장</button>
